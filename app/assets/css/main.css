@@ -1,0 +1,381 @@
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation utilities */
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Animation delays */
+.animation-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+/* Mobile-first responsive utilities */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Improved mobile scrolling */
+@media (max-width: 768px) {
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Larger touch targets for mobile */
+  button, [role="button"], [tabindex] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent zoom on input focus on mobile */
+  input[type="text"], input[type="search"], select, textarea {
+    font-size: 16px !important;
+  }
+  
+  /* Better mobile text scaling */
+  .responsive-text {
+    font-size: clamp(0.75rem, 2.5vw, 1rem);
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 700px) and (max-width: 1023px) {
+  .tablet-hidden {
+    display: none;
+  }
+  
+  .tablet-compact {
+    padding: 0.5rem;
+    margin: 0.25rem;
+  }
+}
+
+/* Desktop enhancements */
+@media (min-width: 1024px) {
+  .desktop-only {
+    display: block;
+  }
+  
+  /* Enhanced hover states on desktop */
+  .desktop-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-primary-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Shadow utilities */
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(var(--theme-primary), 0.3);
+}
+
+.shadow-soft {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-elevated {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--theme-bg-tertiary) 25%,
+    var(--theme-bg-quaternary) 50%,
+    var(--theme-bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--theme-border-primary) 60%, transparent);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--theme-border-secondary) 70%, transparent);
+}
+
+/* Hide scrollbars on mobile for cleaner look */
+@media (max-width: 768px) {
+  .mobile-no-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-no-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Focus styles */
+.focus-ring {
+  transition: all 0.2s ease;
+}
+
+.focus-ring:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--theme-primary);
+  ring-offset: 2px;
+}
+
+/* Noise texture for depth */
+.noise-texture {
+  position: relative;
+}
+
+.noise-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.03;
+}
+
+/* Responsive utilities for specific breakpoints */
+@media (max-width: 479px) {
+  .xs-hidden { display: none; }
+  .xs-text-xs { font-size: 0.75rem; }
+  .xs-p-1 { padding: 0.25rem; }
+  .xs-gap-1 { gap: 0.25rem; }
+}
+
+@media (min-width: 480px) and (max-width: 639px) {
+  .sm-hidden { display: none; }
+}
+
+/* Compact mode for smaller screens */
+.compact-mode {
+  padding: 0.25rem;
+  margin: 0.125rem;
+  font-size: 0.875rem;
+}
+
+/* Mobile-friendly card layouts */
+@media (max-width: 768px) {
+  .card-mobile {
+    margin: 0.25rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  .card-mobile .card-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--theme-border-primary, #e2e8f0);
+  }
+  
+  .card-mobile .card-content {
+    padding: 0;
+  }
+}
+
+/* Responsive flex utilities */
+.mobile-flex-col {
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .sm\:flex-row {
+    flex-direction: row;
+  }
+}
+
+/* Chart tooltip overrides to remove default white background */
+.unovis-tooltip,
+.unovis-tooltip-container,
+.vis-tooltip,
+.vis-tooltip-container,
+[data-vis-tooltip],
+[data-testid="tooltip"],
+.tooltip-wrapper,
+.tooltip-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.unovis-tooltip .tooltip-content,
+.vis-tooltip .tooltip-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Target any tooltip divs that might have white backgrounds */
+div[style*="background"] {
+  background: transparent !important;
+}
+
+/* More aggressive approach for chart tooltips */
+figure svg + div,
+figure div[style] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Target the specific tooltip classes found */
+.css-135213i-tooltip,
+.css-wq9ok4-non-interactive,
+.css-38lglc,
+[class*="css-"][class*="tooltip"],
+[class*="css-135213i"],
+[class*="css-wq9ok4"],
+[class*="css-38lglc"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Mobile-specific chart optimizations */
+@media (max-width: 768px) {
+  .chart-container {
+    height: auto;
+    min-height: 80px;
+  }
+  
+  .chart-legend {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+  
+  .chart-tooltip {
+    font-size: 0.75rem;
+    max-width: 200px;
+  }
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  /* Reduce animations on mobile for better performance */
+  .performance-optimized * {
+    animation-duration: 0.15s !important;
+    transition-duration: 0.15s !important;
+  }
+  
+  /* Optimize transforms for mobile */
+  .mobile-transform {
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
