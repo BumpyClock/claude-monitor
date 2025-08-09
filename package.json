@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "type-check": "nuxt typecheck",
+    "start": "nuxt build && nuxt preview"
   },
   "dependencies": {
     "@nuxt/content": "3.6.3",

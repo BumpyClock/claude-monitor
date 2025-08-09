@@ -116,7 +116,8 @@ const scrollTop = ref(0);
 const { getGradientForSession, getColorForSession, getGradientForApp, getColorForApp, getHexColorForApp } = useEventColors();
 
 // WebSocket connection for combined events
-const { allEvents, isLoadingHistorical, handleScroll: infiniteScrollHandler } = useWebSocket('ws://localhost:4000/stream');
+const { websocketUrl } = useServerConfig();
+const { allEvents, isLoadingHistorical, handleScroll: infiniteScrollHandler } = useWebSocket(websocketUrl.value);
 
 // Enhanced grouping system
 const { groupingPreferences } = useGroupingPreferences();
@@ -158,8 +159,9 @@ const clearLocalFilters = () => {
 };
 
 const fetchFilterOptions = async () => {
+  const { apiUrl } = useServerConfig();
   try {
-    const res = await fetch('http://localhost:4000/events/filter-options');
+    const res = await fetch(apiUrl('/events/filter-options'));
     if (res.ok) filterOptions.value = await res.json();
   } catch {}
 };

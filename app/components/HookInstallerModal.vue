@@ -83,7 +83,7 @@
           <input
             id="serverUrl"
             v-model="form.serverUrl"
-            placeholder="http://localhost:4000"
+            :placeholder="`http://${serverHost}:${serverPort}`"
             :class="[
               'w-full px-3 py-2 border rounded-md text-sm',
               formErrors.serverUrl ? 'border-red-500 focus:ring-red-500' : 'border-border focus:ring-primary'
@@ -177,10 +177,12 @@ const generateSlug = (name: string): string => {
 }
 
 // Form state
+const { serverUrl: defaultServerUrl, serverHost, serverPort } = useServerConfig();
+
 const form = ref({
   directory: '',
   projectName: '',
-  serverUrl: 'http://localhost:4000'
+  serverUrl: defaultServerUrl.value
 })
 
 const isInstalling = ref(false)
@@ -315,7 +317,8 @@ const handleSubmit = async () => {
   showSuccess.value = false
 
   try {
-    const response = await fetch('http://localhost:4000/api/install-hooks', {
+    const { apiUrl } = useServerConfig();
+    const response = await fetch(apiUrl('/install-hooks'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -360,10 +363,11 @@ const handleSubmit = async () => {
 
 // Reset form state
 const resetForm = () => {
+  const { serverUrl: defaultServerUrl, serverHost, serverPort } = useServerConfig();
   form.value = {
     directory: '',
     projectName: '',
-    serverUrl: 'http://localhost:4000'
+    serverUrl: defaultServerUrl.value
   }
   formErrors.value = {
     directory: '',

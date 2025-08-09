@@ -1,81 +1,83 @@
 {
-	"env": {
-		"CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true"
-	},
-	"hooks": {
-		"PreToolUse": [
-			{
-				"matcher": "",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/pre_tool_use.py"
-					},
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type PreToolUse --summarize --server-url http://localhost:4000/events"
-					}
-				]
-			}
-		],
-		"PostToolUse": [
-			{
-				"matcher": "",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/post_tool_use.py"
-					},
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type PostToolUse --summarize --server-url http://localhost:4000/events"
-					}
-				]
-			}
-		],
-		"Stop": [
-			{
-				"matcher": "",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/stop.py --chat"
-					},
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type Stop --add-chat --server-url http://localhost:4000/events"
-					}
-				]
-			}
-		],
-		"UserPromptSubmit": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/user_prompt_submit.py --log-only"
-					},
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type UserPromptSubmit --summarize --server-url http://localhost:4000/events"
-					}
-				]
-			}
-		],
-		"SubagentStop": [
-			{
-				"matcher": "",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/subagent_stop.py"
-					},
-					{
-						"type": "command",
-						"command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type SubagentStop --server-url http://localhost:4000/events"
-					}
-				]
-			}
-		]
-	}
+  "env": {
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
+    "CLAUDE_MONITOR_HOST": "localhost",
+    "CLAUDE_MONITOR_PORT": "3000"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/pre_tool_use.py"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type PreToolUse --summarize"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/post_tool_use.py"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type PostToolUse --summarize"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/stop.py --chat"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type Stop --add-chat"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/user_prompt_submit.py --log-only"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type UserPromptSubmit --summarize"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/subagent_stop.py"
+          },
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/send_event.py --source-app project-claude-monitor --event-type SubagentStop"
+          }
+        ]
+      }
+    ]
+  }
 }

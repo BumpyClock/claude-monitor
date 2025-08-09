@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen h-full grid grid-rows-[auto,1fr] bg-[var(--theme-bg-secondary)] relative">
+  <div class="min-h-screen h-full grid grid-rows-[auto,auto,1fr] bg-[var(--theme-bg-secondary)] relative">
     <div class="absolute inset-0 pointer-events-none"></div>
 
     <header class="border-b border-[var(--theme-border-primary)]/10 bg-[var(--theme-bg-primary)]">
@@ -202,47 +202,46 @@
       </div>
     </header>
 
-    <main class="h-full grid grid-rows-[auto,1fr] min-w-0">
-      <div class="sticky top-0 z-30 px-2 sm:px-3 py-2 sm:py-3 border-b border-[var(--theme-border-primary)]/10 bg-[var(--theme-bg-primary)]/80 backdrop-blur-xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
-          <!-- Live Activity Monitor (combined event + token activity) -->
-          <LiveActivityMonitor 
-            :events="fullyFilteredEvents" 
-            :filters="filters as any" 
-            :timeline-scroll="timelineScrollPosition"
-            :ws-connection="ws"
-            :active-sessions-count="uniqueSessionsCount"
-          />
-          
-          <!-- Token Usage Card (simplified, clickable) -->
-          <TokenUsageCard :ws-connection="ws" @open-modal="showTokenModal = true" />
-        </div>
+    <!-- Live Activity and Token Cards at the top -->
+    <div class="sticky top-0 z-30 px-2 sm:px-3 py-2 sm:py-3 border-b border-[var(--theme-border-primary)]/10 bg-[var(--theme-bg-primary)]/80 backdrop-blur-xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 items-stretch">
+        <!-- Live Activity Monitor (combined event + token activity) -->
+        <LiveActivityMonitor 
+          :events="fullyFilteredEvents" 
+          :filters="filters as any" 
+          :timeline-scroll="timelineScrollPosition"
+          :ws-connection="ws"
+          :active-sessions-count="uniqueSessionsCount"
+        />
+        
+        <!-- Token Usage Card (simplified, clickable) -->
+        <TokenUsageCard :ws-connection="ws" @open-modal="showTokenModal = true" />
       </div>
+    </div>
 
-      <div class="min-h-0 min-w-0">
-        <Card class="h-full rounded-none">
-          <!-- Unified Timeline View -->
-          <EventTimeline 
-            v-if="viewMode === 'unified'"
-            ref="eventTimelineRef"
-            :filters="filters as any" 
-            @update:filters="filters = $event" 
-            :selected-project="selectedProject" 
-            v-model:stick-to-bottom="stickToBottom" 
-            @scroll-sync="handleTimelineScroll" 
-          />
-          
-          <!-- Swimlanes View -->
-          <EventSwimlanes
-            v-else
-            :events="events"
-            :filters="filters as any"
-            :selected-project="selectedProject"
-            v-model:stick-to-bottom="stickToBottom"
-            @scroll-sync="handleTimelineScroll"
-          />
-        </Card>
-      </div>
+    <main class="flex-1 min-h-0 min-w-0">
+      <Card class="h-full rounded-none">
+        <!-- Unified Timeline View -->
+        <EventTimeline 
+          v-if="viewMode === 'unified'"
+          ref="eventTimelineRef"
+          :filters="filters as any" 
+          @update:filters="filters = $event" 
+          :selected-project="selectedProject" 
+          v-model:stick-to-bottom="stickToBottom" 
+          @scroll-sync="handleTimelineScroll" 
+        />
+        
+        <!-- Swimlanes View -->
+        <EventSwimlanes
+          v-else
+          :events="events"
+          :filters="filters as any"
+          :selected-project="selectedProject"
+          v-model:stick-to-bottom="stickToBottom"
+          @scroll-sync="handleTimelineScroll"
+        />
+      </Card>
     </main>
 
     <StickScrollButton :stick-to-bottom="stickToBottom" @toggle="stickToBottom = !stickToBottom" />
@@ -276,7 +275,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { AlertCircle, Sun, Moon, Monitor, ListIcon, Layers, Settings as SettingsIcon, Plus, Menu, X } from 'lucide-vue-next';
 
-const { events, error, ws } = useWebSocket('ws://localhost:3000/stream');
+const { websocketUrl } = useServerConfig();
+const { events, error, ws } = useWebSocket(websocketUrl.value);
 const themes = useThemes();
 const { groupingPreferences, swimlanePreferences } = useGroupingPreferences();
 const { getDisplayName, saveAppMapping } = useAppNames();

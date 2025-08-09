@@ -66,61 +66,6 @@ function initTables(): void {
   db.exec('CREATE INDEX IF NOT EXISTS idx_hook_event_type ON events(hook_event_type)');
   db.exec('CREATE INDEX IF NOT EXISTS idx_timestamp ON events(timestamp)');
   
-  // Create themes table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS themes (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL UNIQUE,
-      displayName TEXT NOT NULL,
-      description TEXT,
-      colors TEXT NOT NULL,
-      isPublic INTEGER NOT NULL DEFAULT 0,
-      authorId TEXT,
-      authorName TEXT,
-      createdAt INTEGER NOT NULL,
-      updatedAt INTEGER NOT NULL,
-      tags TEXT,
-      downloadCount INTEGER DEFAULT 0,
-      rating REAL DEFAULT 0,
-      ratingCount INTEGER DEFAULT 0
-    )
-  `);
-  
-  // Create theme shares table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS theme_shares (
-      id TEXT PRIMARY KEY,
-      themeId TEXT NOT NULL,
-      shareToken TEXT NOT NULL UNIQUE,
-      expiresAt INTEGER,
-      isPublic INTEGER NOT NULL DEFAULT 0,
-      allowedUsers TEXT,
-      createdAt INTEGER NOT NULL,
-      accessCount INTEGER DEFAULT 0,
-      FOREIGN KEY (themeId) REFERENCES themes (id) ON DELETE CASCADE
-    )
-  `);
-  
-  // Create theme ratings table
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS theme_ratings (
-      id TEXT PRIMARY KEY,
-      themeId TEXT NOT NULL,
-      userId TEXT NOT NULL,
-      rating INTEGER NOT NULL,
-      comment TEXT,
-      createdAt INTEGER NOT NULL,
-      UNIQUE(themeId, userId),
-      FOREIGN KEY (themeId) REFERENCES themes (id) ON DELETE CASCADE
-    )
-  `);
-  
-  // Create indexes for theme tables
-  db.exec('CREATE INDEX IF NOT EXISTS idx_themes_name ON themes(name)');
-  db.exec('CREATE INDEX IF NOT EXISTS idx_themes_isPublic ON themes(isPublic)');
-  db.exec('CREATE INDEX IF NOT EXISTS idx_themes_createdAt ON themes(createdAt)');
-  db.exec('CREATE INDEX IF NOT EXISTS idx_theme_shares_token ON theme_shares(shareToken)');
-  db.exec('CREATE INDEX IF NOT EXISTS idx_theme_ratings_theme ON theme_ratings(themeId)');
 }
 
 export function closeDatabase(): void {

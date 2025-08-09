@@ -294,8 +294,9 @@ const getBlockPercentage = (): number => {
 
 // Fetch initial data
 const fetchTokenData = async () => {
+  const { apiUrl } = useServerConfig();
   try {
-    const response = await fetch('http://localhost:4000/api/usage/blocks/live')
+    const response = await fetch(apiUrl('/usage/blocks/live'))
     const result = await response.json()
     
     if (result.success && result.data) {
