@@ -1,0 +1,1 @@
+C:/Users/adity/Projects/claude-code-hooks/.claude/hooks/post_tool_use.py

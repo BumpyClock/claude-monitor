@@ -1,7 +1,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import type { HookEvent, WebSocketMessage } from '~/types';
 
-export function useWebSocket(url: string) {
+export function useWebSocket(url?: string) {
   const events = ref<HookEvent[]>([]);
   const historicalEvents = ref<HookEvent[]>([]);
   const isConnected = ref(false);
@@ -17,7 +17,9 @@ export function useWebSocket(url: string) {
   
   const connect = () => {
     try {
-      const ws = new WebSocket(url);
+      // Use the provided URL or default to the configured WebSocket URL
+      const wsUrl = url || 'ws://localhost:3000/stream';
+      const ws = new WebSocket(wsUrl);
       wsRef.value = ws;
       
       ws.onopen = () => {

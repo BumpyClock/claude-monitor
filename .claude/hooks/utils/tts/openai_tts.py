@@ -1,0 +1,1 @@
+C:/Users/adity/Projects/claude-code-hooks/.claude/hooks/utils/tts/openai_tts.py

@@ -276,7 +276,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { AlertCircle, Sun, Moon, Monitor, ListIcon, Layers, Settings as SettingsIcon, Plus, Menu, X } from 'lucide-vue-next';
 
-const { events, error, ws } = useWebSocket('ws://localhost:4000/stream');
+const { events, error, ws } = useWebSocket('ws://localhost:3000/stream');
 const themes = useThemes();
 const { groupingPreferences, swimlanePreferences } = useGroupingPreferences();
 const { getDisplayName, saveAppMapping } = useAppNames();

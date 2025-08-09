@@ -25,5 +25,23 @@ export default defineNuxtConfig({
   shadcn: {
     prefix: '',
     componentDir: './app/components/ui'
+  },
+
+  nitro: {
+    experimental: {
+      websocket: true
+    },
+    devServer: {
+      port: parseInt(process.env.NUXT_PUBLIC_SERVER_PORT || '3000')
+    }
+  },
+
+  runtimeConfig: {
+    databasePath: '.data/events.db',
+    tokenUpdateInterval: 30000,
+    public: {
+      serverPort: process.env.NUXT_PUBLIC_SERVER_PORT || '3000',
+      serverHost: process.env.NUXT_PUBLIC_SERVER_HOST || 'localhost'
+    }
   }
 })
