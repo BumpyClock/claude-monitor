@@ -1,4 +1,12 @@
-#!/usr/bin/env -S uv run --script
+/**
+ * Python constants.py template
+ * 
+ * This template contains the Python constants module that gets generated
+ * during hook installation. It replaces the duplicate constants.py files
+ * to maintain DRY principles while preserving exact functionality.
+ */
+
+export const CONSTANTS_PY_CONTENT = `#!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.8"
 # ///
@@ -81,3 +89,6 @@ def ensure_session_log_dir(session_id: str) -> Path:
                 pass  # Lock file cleanup is best-effort
     
     return log_dir
+`;
+
+export default CONSTANTS_PY_CONTENT;

@@ -104,6 +104,20 @@
           <p class="text-destructive/80">{{ installError }}</p>
         </div>
 
+        <!-- Warnings Alert -->
+        <div v-if="installWarnings.length > 0" class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
+          <div class="flex items-center gap-2 text-yellow-800 mb-2">
+            <AlertTriangle class="w-4 h-4" />
+            <span class="font-medium">Installation Warnings</span>
+          </div>
+          <ul class="text-yellow-700 space-y-1">
+            <li v-for="warning in installWarnings" :key="warning" class="flex items-start gap-1">
+              <span class="text-yellow-500 mt-0.5">•</span>
+              <span>{{ warning }}</span>
+            </li>
+          </ul>
+        </div>
+
         <!-- Success State -->
         <div v-if="showSuccess" class="p-4 bg-green-50 border border-green-200 rounded-lg">
           <div class="flex items-center gap-2 text-green-800 mb-2">
@@ -115,6 +129,9 @@
           </div>
           <div class="text-xs text-green-600 mt-2">
             Project: {{ form.projectName }} ({{ slugPreview }})
+          </div>
+          <div v-if="installWarnings.length > 0" class="text-xs text-yellow-600 mt-2">
+            ⚠️ Installation completed with {{ installWarnings.length }} warning(s) - see above for details
           </div>
         </div>
 
@@ -154,7 +171,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Button } from '~/components/ui/button'
-import { Plus, Folder, Check, AlertCircle } from 'lucide-vue-next'
+import { Plus, Folder, Check, AlertCircle, AlertTriangle } from 'lucide-vue-next'
 
 interface Props {
   isOpen: boolean
@@ -188,6 +205,7 @@ const form = ref({
 const isInstalling = ref(false)
 const showSuccess = ref(false)
 const installError = ref('')
+const installWarnings = ref<string[]>([])
 
 // Form validation
 const formErrors = ref({
@@ -314,6 +332,7 @@ const handleSubmit = async () => {
 
   isInstalling.value = true
   installError.value = ''
+  installWarnings.value = []
   showSuccess.value = false
 
   try {
@@ -336,6 +355,11 @@ const handleSubmit = async () => {
     }
 
     const result = await response.json()
+    
+    // Store any warnings from the server
+    if (result.warnings && result.warnings.length > 0) {
+      installWarnings.value = result.warnings
+    }
     
     // Show success state
     showSuccess.value = true
@@ -375,6 +399,7 @@ const resetForm = () => {
     serverUrl: ''
   }
   installError.value = ''
+  installWarnings.value = []
   showSuccess.value = false
   isInstalling.value = false
 }

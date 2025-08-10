@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isAbsolute } from 'path';
 
 // Hook Event Validation Schema
 export const HookEventSchema = z.object({
@@ -84,6 +85,30 @@ export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): {
     };
   }
 }
+
+// Hook Installation Request Schema
+export const HookInstallRequestSchema = z.object({
+  targetPath: z.string()
+    .min(1, 'Target path is required')
+    .max(500, 'Target path too long')
+    .refine(path => !path.includes('\0'), 'Path contains null bytes')
+    .refine(path => isAbsolute(path), 'Path must be absolute')
+    .refine(path => !path.includes('..'), 'Path traversal not allowed'),
+  displayName: z.string()
+    .min(1, 'Display name is required')
+    .max(100, 'Display name too long')
+    .regex(/^[a-zA-Z0-9\s\-_]+$/, 'Invalid characters in display name'),
+  serverUrl: z.string()
+    .url('Invalid server URL')
+    .refine(url => {
+      try {
+        const parsed = new URL(url);
+        return ['http:', 'https:'].includes(parsed.protocol);
+      } catch {
+        return false;
+      }
+    }, 'Only HTTP/HTTPS protocols allowed')
+}).strict();
 
 // Request size limits
 export const REQUEST_LIMITS = {

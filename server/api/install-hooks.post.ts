@@ -1,24 +1,22 @@
 import { installHooks } from '../utils/hook-installer';
+import { HookInstallRequestSchema, validateRequest } from '../utils/validation/schemas';
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { targetPath, displayName, serverUrl } = body;
     
-    // Validate required fields
-    if (!targetPath || !displayName || !serverUrl) {
+    // Use Zod validation for comprehensive input validation
+    const validation = validateRequest(HookInstallRequestSchema, body);
+    if (!validation.success) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Missing required fields: targetPath, displayName, and serverUrl are required'
+        statusMessage: validation.error,
+        data: validation.details // Include details for debugging
       });
     }
     
-    // Install hooks
-    const result = await installHooks({
-      targetPath,
-      displayName,
-      serverUrl
-    });
+    // Install hooks with validated data
+    const result = await installHooks(validation.data);
     
     return result;
   } catch (error) {
