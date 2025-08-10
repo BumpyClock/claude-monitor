@@ -30,10 +30,11 @@ export default defineNuxtConfig({
   nitro: {
     experimental: {
       websocket: true
-    },
-    devServer: {
-      port: parseInt(process.env.NUXT_PUBLIC_SERVER_PORT || '3000')
     }
+  },
+
+  devServer: {
+    port: parseInt(process.env.NUXT_PUBLIC_SERVER_PORT || '3000')
   },
 
   runtimeConfig: {

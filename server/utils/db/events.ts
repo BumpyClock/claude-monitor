@@ -95,16 +95,18 @@ export function getHistoricalEvents(beforeTimestamp: number, limit: number = 50)
   
   if (events.length > 0) {
     const earliestEvent = events[0]; // First event after reverse (oldest in this batch)
-    earliest_timestamp = new Date(earliestEvent.timestamp).toISOString();
-    
-    // Check if there are more events older than the earliest in this batch
-    const checkMoreStmt = db.prepare(`
-      SELECT COUNT(*) as count
-      FROM events
-      WHERE timestamp < ?
-    `);
-    const result = checkMoreStmt.get(earliestEvent.timestamp) as { count: number };
-    has_more = result.count > 0;
+    if (earliestEvent) {
+      earliest_timestamp = new Date(earliestEvent.timestamp).toISOString();
+      
+      // Check if there are more events older than the earliest in this batch
+      const checkMoreStmt = db.prepare(`
+        SELECT COUNT(*) as count
+        FROM events
+        WHERE timestamp < ?
+      `);
+      const result = checkMoreStmt.get(earliestEvent.timestamp) as { count: number };
+      has_more = result.count > 0;
+    }
   }
   
   return {

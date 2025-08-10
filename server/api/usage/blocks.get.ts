@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     mode: query.mode as any || undefined,
     order: query.order as any || undefined,
     tokenLimit: query.tokenLimit ? 
-      (query.tokenLimit === 'max' ? 'max' : parseInt(query.tokenLimit as string)) : 
+      (query.tokenLimit === 'max' ? 'max' as const : parseInt(query.tokenLimit as string, 10)) : 
       undefined
   };
   

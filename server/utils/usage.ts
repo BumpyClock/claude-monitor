@@ -10,9 +10,14 @@ import {
   loadSessionData,
   loadSessionBlockData
 } from 'ccusage/data-loader';
+import { 
+  calculateBurnRate, 
+  projectBlockUsage,
+  getTotalTokens
+} from './burn-rate-utils';
 
-// Type definitions (since they're not exported from ccusage)
-type CostMode = 'auto' | 'cache' | 'builtin';
+// Type definitions (imported from ccusage types)
+type CostMode = 'auto' | 'calculate' | 'display';
 type SortOrder = 'asc' | 'desc';
 
 // Configuration
@@ -31,14 +36,12 @@ export async function getDailyUsage(options?: {
   mode?: CostMode;
 }) {
   try {
-    const claudePaths = getClaudePaths();
     const data = await loadDailyUsageData({
-      claudePaths,
       since: options?.since,
       until: options?.until,
       project: options?.project,
       mode: options?.mode || DEFAULT_COST_MODE,
-      breakdown: options?.breakdown || false
+      groupByProject: options?.breakdown || false
     });
     return { success: true, data };
   } catch (error) {
@@ -61,14 +64,12 @@ export async function getMonthlyUsage(options?: {
   mode?: CostMode;
 }) {
   try {
-    const claudePaths = getClaudePaths();
     const data = await loadMonthlyUsageData({
-      claudePaths,
       since: options?.since,
       until: options?.until,
       project: options?.project,
       mode: options?.mode || DEFAULT_COST_MODE,
-      breakdown: options?.breakdown || false
+      groupByProject: options?.breakdown || false
     });
     return { success: true, data };
   } catch (error) {
@@ -91,9 +92,7 @@ export async function getSessionUsage(options?: {
   order?: SortOrder;
 }) {
   try {
-    const claudePaths = getClaudePaths();
     const data = await loadSessionData({
-      claudePaths,
       since: options?.since,
       until: options?.until,
       project: options?.project,
@@ -121,23 +120,46 @@ export async function getBlocksUsage(options?: {
   tokenLimit?: number | 'max';
 }) {
   try {
-    const claudePaths = getClaudePaths();
     let blocks = await loadSessionBlockData({
-      claudePaths,
       sessionDurationHours: DEFAULT_SESSION_DURATION_HOURS,
       mode: options?.mode || DEFAULT_COST_MODE,
-      order: options?.order || DEFAULT_SORT_ORDER,
-      tokenLimit: options?.tokenLimit
+      order: options?.order || DEFAULT_SORT_ORDER
     });
 
     if (options?.active) {
       blocks = blocks.filter(block => block.isActive);
     }
 
-    // Add computed fields
+    // Apply token limit filtering if specified
+    if (options?.tokenLimit !== undefined && options.tokenLimit !== 'max' && typeof options.tokenLimit === 'number') {
+      const tokenLimit = options.tokenLimit as number; // Type assertion after checking
+      blocks = blocks.filter(block => {
+        const totalTokens = block.tokenCounts.inputTokens + 
+          block.tokenCounts.outputTokens + 
+          block.tokenCounts.cacheCreationInputTokens + 
+          block.tokenCounts.cacheReadInputTokens;
+        return totalTokens <= tokenLimit;
+      });
+    }
+
+    // Add computed fields (same as CLI's JSON output)
     const enrichedBlocks = blocks.map(block => {
-      // Calculate total tokens
-      const totalTokens = Object.values(block.tokenCounts).reduce((sum, count) => sum + count, 0);
+      // Transform ccusage block to our SessionBlock type for calculations
+      const sessionBlock = {
+        id: block.id,
+        startTime: block.startTime,
+        endTime: block.endTime,
+        actualEndTime: block.actualEndTime,
+        isActive: block.isActive,
+        isGap: block.isGap,
+        entries: block.entries,
+        tokenCounts: block.tokenCounts,
+        costUSD: block.costUSD,
+        models: block.models
+      };
+
+      const burnRate = block.isActive ? calculateBurnRate(sessionBlock) : null;
+      const projection = block.isActive ? projectBlockUsage(sessionBlock) : null;
 
       return {
         id: block.id,
@@ -148,12 +170,11 @@ export async function getBlocksUsage(options?: {
         isGap: block.isGap,
         entries: block.entries,
         tokenCounts: block.tokenCounts,
-        totalTokens,
+        totalTokens: getTotalTokens(block.tokenCounts),
         costUSD: block.costUSD,
         models: block.models,
-        // Burn rate and projection calculation removed as functions not available
-        burnRate: null,
-        projection: null
+        burnRate,
+        projection
       };
     });
 
