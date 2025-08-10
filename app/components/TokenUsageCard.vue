@@ -56,12 +56,10 @@
           <div class="text-[10px] text-muted-foreground uppercase tracking-wide">Est. Cost</div>
         </div>
         
-        <!-- Session Duration -->
+        <!-- Tokens per Minute -->
         <div class="text-center p-2 bg-muted/30 rounded-lg">
-          <div class="text-xl font-bold text-purple-600">
-            {{ tokenData.isActive ? formatDurationShort(tokenData.startTime) : 'Done' }}
-          </div>
-          <div class="text-[10px] text-muted-foreground uppercase tracking-wide">Duration</div>
+          <div class="text-xl font-bold" :class="tokensPerMinColorClass">{{ displayTokensPerMin }}</div>
+          <div class="text-[10px] text-muted-foreground uppercase tracking-wide">Tokens/min</div>
         </div>
       </div>
       
@@ -94,6 +92,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Card } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import { Zap, Loader2, Pause } from 'lucide-vue-next'
+// Use centralized formatters
+import { formatNumber, formatTime, formatDurationFromStart as formatDuration, formatDurationShort } from '~/utils/formatters';
 
 interface TokenUsageData {
   id: string
@@ -117,7 +117,7 @@ interface TokenUsageData {
 }
 
 const props = defineProps<{
-  wsConnection?: { value: WebSocket | null } // WebSocket connection ref from parent
+  wsConnection?: WebSocket | null // WebSocket connection from parent
 }>()
 
 defineEmits<{
@@ -172,35 +172,6 @@ const transformSessionBlock = (block: any): TokenUsageData | null => {
   }
 }
 
-// Format number with commas
-const formatNumber = (num: number | undefined): string => {
-  if (num === undefined || num === null || isNaN(num)) return '0'
-  return Math.round(num).toLocaleString()
-}
-
-// Format time
-const formatTime = (timestamp: string): string => {
-  return new Date(timestamp).toLocaleTimeString()
-}
-
-// Format duration from start time
-const formatDuration = (startTime: string): string => {
-  const start = new Date(startTime).getTime()
-  const now = Date.now()
-  const duration = Math.floor((now - start) / 1000)
-  
-  const hours = Math.floor(duration / 3600)
-  const minutes = Math.floor((duration % 3600) / 60)
-  const seconds = duration % 60
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m ${seconds}s`
-  } else if (minutes > 0) {
-    return `${minutes}m ${seconds}s`
-  } else {
-    return `${seconds}s`
-  }
-}
 
 // Format model name to be more readable
 const formatModelName = (model: string): string => {
@@ -256,23 +227,29 @@ const displayBurnRate = computed(() => {
   }
 })
 
-// Format duration in short form
-const formatDurationShort = (startTime: string): string => {
-  const start = new Date(startTime).getTime()
-  const now = Date.now()
-  const duration = Math.floor((now - start) / 1000)
-  
-  const hours = Math.floor(duration / 3600)
-  const minutes = Math.floor((duration % 3600) / 60)
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`
-  } else if (minutes > 0) {
-    return `${minutes}m`
+// Display tokens per minute (same as burn rate since we're extracting tokensPerMinute)
+const displayTokensPerMin = computed(() => {
+  if (!tokenData.value?.burnRate || tokenData.value.burnRate === 0) return '0'
+  const rate = tokenData.value.burnRate
+  // Format large numbers appropriately
+  if (rate >= 1000000) {
+    return `${(rate / 1000000).toFixed(1)}M`
+  } else if (rate >= 1000) {
+    return `${(rate / 1000).toFixed(1)}K`
   } else {
-    return `${duration}s`
+    return Math.round(rate).toString()
   }
-}
+})
+
+// Tokens per minute color class
+const tokensPerMinColorClass = computed(() => {
+  if (!tokenData.value?.burnRate || tokenData.value.burnRate === 0) return 'text-gray-500'
+  const rate = tokenData.value.burnRate
+  if (rate < 1000) return 'text-green-600'
+  if (rate < 10000) return 'text-yellow-600' 
+  if (rate < 50000) return 'text-orange-600'
+  return 'text-red-600'
+})
 
 // Calculate block percentage
 const getBlockPercentage = (): number => {
@@ -330,8 +307,8 @@ onMounted(() => {
   fetchTokenData()
   
   // Listen for WebSocket updates if available
-  if (props.wsConnection?.value) {
-    props.wsConnection.value.addEventListener('message', handleWebSocketMessage)
+  if (props.wsConnection) {
+    props.wsConnection.addEventListener('message', handleWebSocketMessage)
   }
   
   // Update duration display every second for active sessions
@@ -344,8 +321,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (props.wsConnection?.value) {
-    props.wsConnection.value.removeEventListener('message', handleWebSocketMessage)
+  if (props.wsConnection) {
+    props.wsConnection.removeEventListener('message', handleWebSocketMessage)
   }
   
   if (updateInterval.value) {

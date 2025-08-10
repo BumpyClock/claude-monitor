@@ -22,12 +22,16 @@ export function getEventTypeGradient(type: string): string {
 }
 
 export function getSessionColorClass(sessionId: string, colors: string[]): string {
+  if (colors.length === 0) {
+    return 'gray-500'; // Fallback color
+  }
+  
   const hash = sessionId.split('').reduce((acc, char) => {
     return char.charCodeAt(0) + ((acc << 5) - acc);
   }, 0);
   
   const index = Math.abs(hash) % colors.length;
-  return colors[index];
+  return colors[index] ?? colors[0] ?? 'gray-500';
 }
 
 export function generateColorPalette(): string[] {

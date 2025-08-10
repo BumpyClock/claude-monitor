@@ -17,7 +17,7 @@
             <Badge variant="outline" class="font-mono text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded-sm shrink-0" title="Session">
               {{ sessionIdShort }}
             </Badge>
-            <Badge variant="soft" class="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 shrink-0" :title="`${groupMeta.count} events grouped`">
+            <Badge variant="secondary" class="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 shrink-0" :title="`${groupMeta.count} events grouped`">
               <LayersIcon class="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
               {{ groupMeta.count }}
             </Badge>
@@ -45,7 +45,7 @@
           <div class="flex-1 min-w-0 overflow-hidden">
             <!-- Event Type and Tool -->
             <div class="flex items-center gap-1.5 sm:gap-2 mb-1 min-w-0">
-              <Badge variant="soft" class="gap-1 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] leading-4 shrink-0">
+              <Badge variant="secondary" class="gap-1 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] leading-4 shrink-0">
                 <component :is="eventIcon" class="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
                 <span class="font-medium text-[var(--theme-text-primary)] hidden sm:inline">{{ event.hook_event_type }}</span>
               </Badge>

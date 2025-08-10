@@ -18,12 +18,8 @@
 <script setup lang="ts">
 import LivePulseChart from './LivePulseChart.vue'
 
-// Simple interface for hook events - adjust as needed for your types
-interface HookEvent {
-  timestamp: number
-  source_app: string
-  hook_event_type: string
-}
+// Use the standard HookEvent interface from ~/types
+import type { HookEvent } from '~/types'
 
 defineProps<{
   events: HookEvent[]

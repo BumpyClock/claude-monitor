@@ -28,7 +28,7 @@
                   <!-- Tool result -->
                   <div v-else-if="content.type === 'tool_result'" 
                        class="bg-muted p-3 rounded-md border border-border">
-                    <Badge variant="outline" size="xs" class="mb-2">
+                    <Badge variant="outline" size="sm" class="mb-2">
                       <Wrench class="w-3 h-3 mr-1" />
                       Tool Result
                     </Badge>
@@ -47,7 +47,7 @@
             <Button
               @click="toggleDetails(index)"
               variant="ghost"
-              size="xs"
+              size="sm"
               class="text-xs"
             >
               {{ isDetailsExpanded(index) ? 'Hide' : 'Show' }} Details
@@ -55,7 +55,7 @@
             <Button
               @click="copyMessage(index)"
               variant="ghost" 
-              size="xs"
+              size="sm"
               class="text-xs"
               :title="'Copy message'"
             >
@@ -102,7 +102,7 @@
               </div>
               <!-- Usage info -->
               <div v-if="item.message.usage" class="mt-2">
-                <Badge variant="outline" size="xs" class="text-xs text-muted-foreground">
+                <Badge variant="outline" size="sm" class="text-xs text-muted-foreground">
                   <BarChart3 class="w-3 h-3 mr-1" />
                   Tokens: {{ item.message.usage.input_tokens }} in / {{ item.message.usage.output_tokens }} out
                 </Badge>
@@ -118,7 +118,7 @@
             <Button
               @click="toggleDetails(index)"
               variant="ghost"
-              size="xs"
+              size="sm"
               class="text-xs"
             >
               {{ isDetailsExpanded(index) ? 'Hide' : 'Show' }} Details
@@ -126,7 +126,7 @@
             <Button
               @click="copyMessage(index)"
               variant="ghost" 
-              size="xs"
+              size="sm"
               class="text-xs"
               :title="'Copy message'"
             >
@@ -155,7 +155,7 @@
               </p>
               <!-- Tool use ID if present -->
               <div v-if="item.toolUseID" class="mt-1">
-                <Badge variant="outline" size="xs" class="font-mono">
+                <Badge variant="outline" size="sm" class="font-mono">
                   ID: {{ item.toolUseID }}
                 </Badge>
               </div>
@@ -170,7 +170,7 @@
             <Button
               @click="toggleDetails(index)"
               variant="ghost"
-              size="xs"
+              size="sm"
               class="text-xs"
             >
               {{ isDetailsExpanded(index) ? 'Hide' : 'Show' }} Details
@@ -178,7 +178,7 @@
             <Button
               @click="copyMessage(index)"
               variant="ghost" 
-              size="xs"
+              size="sm"
               class="text-xs"
               :title="'Copy message'"
             >
@@ -214,7 +214,7 @@
             <Button
               @click="toggleDetails(index)"
               variant="ghost"
-              size="xs"
+              size="sm"
               class="text-xs"
             >
               {{ isDetailsExpanded(index) ? 'Hide' : 'Show' }} Details
@@ -222,7 +222,7 @@
             <Button
               @click="copyMessage(index)"
               variant="ghost" 
-              size="xs"
+              size="sm"
               class="text-xs"
               :title="'Copy message'"
             >

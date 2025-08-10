@@ -24,13 +24,13 @@ export function useEventColors() {
   const getColorForSession = (sessionId: string): string => {
     const hash = hashString(sessionId);
     const index = hash % colorPalette.length;
-    return colorPalette[index];
+    return colorPalette[index] ?? colorPalette[0] ?? 'bg-blue-500';
   };
 
   const getColorForApp = (appName: string): string => {
     const hash = hashString(appName);
     const index = hash % colorPalette.length;
-    return colorPalette[index];
+    return colorPalette[index] ?? colorPalette[0] ?? 'bg-blue-500';
   };
 
   const getGradientForSession = (sessionId: string): string => {

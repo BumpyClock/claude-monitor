@@ -170,7 +170,7 @@ const totalEntries = computed(() => props.modelData.length)
 
 const mostUsedModel = computed(() => {
   if (chartData.value.length === 0) return 'None'
-  return chartData.value[0].name
+  return chartData.value[0]?.name || 'Unknown'
 })
 
 const totalTokens = computed(() => {
@@ -187,13 +187,6 @@ const formatModelName = (model: string): string => {
   return model
 }
 
-// Format large numbers
-const formatNumber = (num: number): string => {
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}M`
-  } else if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}K`
-  }
-  return num.toLocaleString()
-}
+// Use centralized formatters
+import { formatNumber } from '~/utils/formatters';
 </script>

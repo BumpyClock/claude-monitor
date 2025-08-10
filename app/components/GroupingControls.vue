@@ -37,7 +37,7 @@
           <input
             type="range"
             :value="groupingPreferences.timeWindow"
-            @input="updateTimeWindow($event.target.value)"
+            @input="updateTimeWindow($event)"
             min="2000"
             max="15000"
             step="1000"
@@ -327,8 +327,19 @@ const toggleSwimlanes = () => {
   swimlanePreferences.value.enabled = !swimlanePreferences.value.enabled
 }
 
-const updateTimeWindow = (value: string | number) => {
-  groupingPreferences.value.timeWindow = typeof value === 'string' ? parseInt(value) : value
+const updateTimeWindow = (value: string | number | Event) => {
+  let numericValue: number;
+  if (typeof value === 'string') {
+    numericValue = parseInt(value);
+  } else if (typeof value === 'number') {
+    numericValue = value;
+  } else if (value instanceof Event && value.target) {
+    const target = value.target as HTMLInputElement;
+    numericValue = parseInt(target.value);
+  } else {
+    numericValue = groupingPreferences.value.timeWindow;
+  }
+  groupingPreferences.value.timeWindow = numericValue;
 }
 
 const applyPreset = (preset: 'minimal' | 'normal' | 'aggressive') => {

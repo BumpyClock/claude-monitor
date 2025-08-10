@@ -59,7 +59,7 @@ export class ChartRenderer {
   }
   
   private setupCanvas(): void {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : null) ?? 1;
     
     this.ctx.canvas.width = this.options.width * dpr;
     this.ctx.canvas.height = this.options.height * dpr;
@@ -76,6 +76,7 @@ export class ChartRenderer {
   drawBars(data: ChartPoint[], animated = true): void {
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = undefined;
     }
     
     const startTime = Date.now();
@@ -92,12 +93,12 @@ export class ChartRenderer {
       data.forEach((point, index) => {
         const barHeight = point.y * easeProgress;
         const x = point.x;
-        const y = this.options.height - this.options.padding.bottom - barHeight;
+        const y = this.options.height - (this.options.padding?.bottom || 20) - barHeight;
         
         // Draw bar with gradient
         const gradient = this.ctx.createLinearGradient(0, y, 0, y + barHeight);
-        gradient.addColorStop(0, point.color || this.options.colors.primary);
-        gradient.addColorStop(1, point.color || this.options.colors.secondary);
+        gradient.addColorStop(0, point.color || this.options.colors?.primary || '#3b82f6');
+        gradient.addColorStop(1, point.color || this.options.colors?.secondary || '#1d4ed8');
         
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(
@@ -109,7 +110,7 @@ export class ChartRenderer {
         
         // Draw value label if bar is tall enough
         if (barHeight > 20 && point.value > 0) {
-          this.ctx.fillStyle = this.options.colors.text;
+          this.ctx.fillStyle = this.options.colors?.text || '#374151';
           this.ctx.font = '10px system-ui';
           this.ctx.textAlign = 'center';
           this.ctx.fillText(
@@ -120,7 +121,7 @@ export class ChartRenderer {
         }
       });
       
-      if (progress < 1) {
+      if (progress < 1 && typeof requestAnimationFrame !== 'undefined') {
         this.animationFrame = requestAnimationFrame(animate);
       }
     };
@@ -133,6 +134,7 @@ export class ChartRenderer {
     
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = undefined;
     }
     
     const startTime = Date.now();
@@ -147,7 +149,7 @@ export class ChartRenderer {
       this.drawGrid();
       
       // Draw line
-      this.ctx.strokeStyle = this.options.colors.primary;
+      this.ctx.strokeStyle = this.options.colors?.primary || '#3b82f6';
       this.ctx.lineWidth = 2;
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
@@ -158,7 +160,7 @@ export class ChartRenderer {
       
       points.slice(0, visiblePoints + 1).forEach((point, index) => {
         const x = point.x;
-        const y = this.options.height - this.options.padding.bottom - point.y;
+        const y = this.options.height - (this.options.padding?.bottom || 20) - point.y;
         
         if (index === 0) {
           this.ctx.moveTo(x, y);
@@ -172,15 +174,15 @@ export class ChartRenderer {
       // Draw points
       points.slice(0, visiblePoints + 1).forEach((point) => {
         const x = point.x;
-        const y = this.options.height - this.options.padding.bottom - point.y;
+        const y = this.options.height - (this.options.padding?.bottom || 20) - point.y;
         
-        this.ctx.fillStyle = this.options.colors.primary;
+        this.ctx.fillStyle = this.options.colors?.primary || '#3b82f6';
         this.ctx.beginPath();
         this.ctx.arc(x, y, 3, 0, Math.PI * 2);
         this.ctx.fill();
       });
       
-      if (progress < 1) {
+      if (progress < 1 && typeof requestAnimationFrame !== 'undefined') {
         this.animationFrame = requestAnimationFrame(animate);
       }
     };
@@ -191,16 +193,21 @@ export class ChartRenderer {
   private drawGrid(): void {
     const { padding, width, height, colors } = this.options;
     
-    this.ctx.strokeStyle = colors.grid;
+    this.ctx.strokeStyle = colors?.grid || '#e5e7eb';
     this.ctx.lineWidth = 0.5;
     
     // Draw horizontal lines
     const rows = 5;
+    const paddingTop = padding.top ?? 10;
+    const paddingBottom = padding.bottom ?? 10;
+    const paddingLeft = padding.left ?? 10;
+    const paddingRight = padding.right ?? 10;
+    
     for (let i = 0; i <= rows; i++) {
-      const y = padding.top + (height - padding.top - padding.bottom) * (i / rows);
+      const y = paddingTop + (height - paddingTop - paddingBottom) * (i / rows);
       this.ctx.beginPath();
-      this.ctx.moveTo(padding.left, y);
-      this.ctx.lineTo(width - padding.right, y);
+      this.ctx.moveTo(paddingLeft, y);
+      this.ctx.lineTo(width - paddingRight, y);
       this.ctx.stroke();
     }
   }
@@ -212,6 +219,7 @@ export class ChartRenderer {
   destroy(): void {
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = undefined;
     }
     this.clear();
   }

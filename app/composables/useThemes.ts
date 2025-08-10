@@ -212,6 +212,105 @@ const PREDEFINED_THEMES: Record<ThemeName, PredefinedTheme> = {
       focusRing: '#000000'
     }
   },
+  'dark-blue': {
+    name: 'dark-blue',
+    displayName: 'Dark Blue',
+    description: 'Professional dark blue theme',
+    cssClass: 'theme-dark-blue',
+    preview: { primary: '#1e293b', secondary: '#334155', accent: '#3b82f6' },
+    colors: {
+      primary: '#3b82f6',
+      primaryHover: '#2563eb',
+      primaryLight: '#dbeafe',
+      primaryDark: '#1d4ed8',
+      bgPrimary: '#0f172a',
+      bgSecondary: '#1e293b',
+      bgTertiary: '#334155',
+      bgQuaternary: '#475569',
+      textPrimary: '#f8fafc',
+      textSecondary: '#e2e8f0',
+      textTertiary: '#cbd5e1',
+      textQuaternary: '#94a3b8',
+      borderPrimary: '#334155',
+      borderSecondary: '#475569',
+      borderTertiary: '#64748b',
+      accentSuccess: '#22c55e',
+      accentWarning: '#f59e0b',
+      accentError: '#ef4444',
+      accentInfo: '#3b82f6',
+      shadow: 'rgba(15, 23, 42, 0.5)',
+      shadowLg: 'rgba(15, 23, 42, 0.8)',
+      hoverBg: 'rgba(59, 130, 246, 0.1)',
+      activeBg: 'rgba(59, 130, 246, 0.2)',
+      focusRing: '#3b82f6'
+    }
+  },
+  'colorblind-friendly': {
+    name: 'colorblind-friendly',
+    displayName: 'Colorblind Friendly',
+    description: 'Accessible colors for colorblind users',
+    cssClass: 'theme-colorblind-friendly',
+    preview: { primary: '#ffffff', secondary: '#f3f4f6', accent: '#1f2937' },
+    colors: {
+      primary: '#1f2937',
+      primaryHover: '#111827',
+      primaryLight: '#f9fafb',
+      primaryDark: '#000000',
+      bgPrimary: '#ffffff',
+      bgSecondary: '#f9fafb',
+      bgTertiary: '#f3f4f6',
+      bgQuaternary: '#e5e7eb',
+      textPrimary: '#111827',
+      textSecondary: '#374151',
+      textTertiary: '#6b7280',
+      textQuaternary: '#9ca3af',
+      borderPrimary: '#d1d5db',
+      borderSecondary: '#9ca3af',
+      borderTertiary: '#6b7280',
+      accentSuccess: '#047857',
+      accentWarning: '#d97706',
+      accentError: '#dc2626',
+      accentInfo: '#1e40af',
+      shadow: 'rgba(31, 41, 55, 0.1)',
+      shadowLg: 'rgba(31, 41, 55, 0.25)',
+      hoverBg: 'rgba(31, 41, 55, 0.05)',
+      activeBg: 'rgba(31, 41, 55, 0.1)',
+      focusRing: '#1f2937'
+    }
+  },
+  'ocean': {
+    name: 'ocean',
+    displayName: 'Ocean',
+    description: 'Calming ocean-inspired theme',
+    cssClass: 'theme-ocean',
+    preview: { primary: '#e0f2fe', secondary: '#b3e5fc', accent: '#0277bd' },
+    colors: {
+      primary: '#0277bd',
+      primaryHover: '#0288d1',
+      primaryLight: '#e0f7fa',
+      primaryDark: '#01579b',
+      bgPrimary: '#f3fdfe',
+      bgSecondary: '#e0f7fa',
+      bgTertiary: '#b2ebf2',
+      bgQuaternary: '#80deea',
+      textPrimary: '#006064',
+      textSecondary: '#00838f',
+      textTertiary: '#0097a7',
+      textQuaternary: '#00acc1',
+      borderPrimary: '#b2ebf2',
+      borderSecondary: '#80deea',
+      borderTertiary: '#4dd0e1',
+      accentSuccess: '#00695c',
+      accentWarning: '#ef6c00',
+      accentError: '#c62828',
+      accentInfo: '#0277bd',
+      shadow: 'rgba(2, 119, 189, 0.15)',
+      shadowLg: 'rgba(2, 119, 189, 0.3)',
+      hoverBg: 'rgba(2, 119, 189, 0.08)',
+      activeBg: 'rgba(2, 119, 189, 0.15)',
+      focusRing: '#0277bd'
+    }
+  },
 };
 
 export function useThemes() {
@@ -234,9 +333,9 @@ export function useThemes() {
   // Computed properties
   const currentThemeData = computed(() => {
     if (state.value.isCustomTheme) {
-      return state.value.customThemes.find(t => t.id === state.value.currentTheme);
+      return state.value.customThemes.find(t => t.id === state.value.currentTheme) ?? null;
     }
-    return PREDEFINED_THEMES[state.value.currentTheme as ThemeName];
+    return PREDEFINED_THEMES[state.value.currentTheme as ThemeName] ?? PREDEFINED_THEMES.light;
   });
 
   const predefinedThemes = computed(() => Object.values(PREDEFINED_THEMES));
@@ -369,13 +468,17 @@ export function useThemes() {
     return str.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2').toLowerCase();
   };
 
-  const generateId = () => {
-    return Math.random().toString(36).substr(2, 9);
+  const generateId = (): string => {
+    return Math.random().toString(36).substring(2, 11);
   };
 
   const isValidColor = (color: string): boolean => {
     if (!process.client) return true
-    return COLOR_REGEX.test(color) || RGBA_REGEX.test(color) || CSS.supports('color', color);
+    try {
+      return COLOR_REGEX.test(color) || RGBA_REGEX.test(color) || CSS.supports('color', color);
+    } catch {
+      return false;
+    }
   };
 
   const calculateContrast = (_color1: string, _color2: string): number => {

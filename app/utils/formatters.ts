@@ -76,8 +76,47 @@ export function truncateString(str: string, maxLength: number): string {
   return str.slice(0, maxLength - 3) + '...';
 }
 
-export function formatNumber(num: number): string {
+export function formatNumber(num: number | undefined): string {
+  if (num === undefined || num === null || isNaN(num)) return '0';
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
   return num.toString();
+}
+
+// Additional time formatting functions for consistency
+export function formatTime(timestamp?: number | string): string {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+}
+
+export function formatDurationFromStart(startTime: string): string {
+  const start = new Date(startTime).getTime();
+  const now = Date.now();
+  const diffMs = now - start;
+  return formatDuration(diffMs);
+}
+
+export function formatDurationShort(startTime: string): string {
+  const start = new Date(startTime).getTime();
+  const now = Date.now();
+  const diffMs = now - start;
+  
+  if (diffMs < 60000) return `${Math.floor(diffMs / 1000)}s`;
+  if (diffMs < 3600000) return `${Math.floor(diffMs / 60000)}m`;
+  return `${Math.floor(diffMs / 3600000)}h`;
+}
+
+// Burn rate utilities
+export function getBurnRateColorClass(rate: number): string {
+  if (rate === 0) return 'text-gray-500';
+  if (rate < 500) return 'text-green-600';
+  if (rate < 1000) return 'text-yellow-600';
+  if (rate < 2000) return 'text-orange-600';
+  return 'text-red-600';
 }

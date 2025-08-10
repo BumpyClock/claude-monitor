@@ -285,10 +285,10 @@ interface TokenUsageData {
 }
 
 const props = defineProps<{
-  wsConnection?: { value: WebSocket | null }
+  wsConnection?: WebSocket | null
 }>()
 
-// Create a reactive wsConnection object for the LiveActivityMonitor
+// Pass wsConnection directly to LiveActivityMonitor
 const wsConnection = computed(() => props.wsConnection)
 
 defineEmits<{
@@ -401,36 +401,11 @@ const burnRateIconClass = computed(() => {
 
 const mostUsedModel = computed(() => {
   if (modelStats.value.length === 0) return 'None'
-  return modelStats.value[0].name
+  return modelStats.value[0]?.name || 'Unknown'
 })
 
-// Format functions
-const formatNumber = (num: number | undefined): string => {
-  if (num === undefined || num === null || isNaN(num)) return '0'
-  return Math.round(num).toLocaleString()
-}
-
-const formatTime = (timestamp: string): string => {
-  return new Date(timestamp).toLocaleTimeString()
-}
-
-const formatDuration = (startTime: string): string => {
-  const start = new Date(startTime).getTime()
-  const now = Date.now()
-  const duration = Math.floor((now - start) / 1000)
-  
-  const hours = Math.floor(duration / 3600)
-  const minutes = Math.floor((duration % 3600) / 60)
-  const seconds = duration % 60
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m ${seconds}s`
-  } else if (minutes > 0) {
-    return `${minutes}m ${seconds}s`
-  } else {
-    return `${seconds}s`
-  }
-}
+// Use centralized formatters
+import { formatNumber, formatTime, formatDurationFromStart as formatDuration, getBurnRateColorClass } from '~/utils/formatters';
 
 const formatModelName = (model: string): string => {
   const parts = model.split('-')
@@ -480,7 +455,7 @@ const drawModelChart = () => {
   
   modelStats.value.forEach((model, index) => {
     const sliceAngle = (model.usage / 100) * 2 * Math.PI
-    const color = modelChartColors[index % modelChartColors.length]
+    const color = modelChartColors[index % modelChartColors.length] || '#8b5cf6'
     
     // Draw slice
     ctx.beginPath()
@@ -611,8 +586,8 @@ onMounted(() => {
   fetchTokenData()
   
   // Listen for WebSocket updates if available
-  if (props.wsConnection?.value) {
-    props.wsConnection.value.addEventListener('message', handleWebSocketMessage)
+  if (props.wsConnection) {
+    props.wsConnection.addEventListener('message', handleWebSocketMessage)
   }
   
   // Update duration display every second for active sessions
@@ -630,8 +605,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (props.wsConnection?.value) {
-    props.wsConnection.value.removeEventListener('message', handleWebSocketMessage)
+  if (props.wsConnection) {
+    props.wsConnection.removeEventListener('message', handleWebSocketMessage)
   }
   
   if (updateInterval.value) {

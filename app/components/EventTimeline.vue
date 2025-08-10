@@ -235,7 +235,7 @@ watch(groupedEvents, async (newGrouped, oldGrouped) => {
     
     if ('groupMeta' in event) {
       // For grouped events, check the group change type
-      changeType = getGroupChangeType(event.id)
+      changeType = getGroupChangeType(String(event.id ?? 'unknown'))
     } else {
       // For individual events, check if we've seen this ID before
       const existsInOld = oldGrouped?.some(e => getEventKey(e) === eventId)

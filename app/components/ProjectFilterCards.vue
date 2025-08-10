@@ -29,14 +29,8 @@ import { computed } from 'vue'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 
-// Simple interface for hook events - adjust as needed for your types
-interface HookEvent {
-  source_app: string
-  session_id: string
-  hook_event_type: string
-  payload?: any
-  project?: string
-}
+// Use the standard HookEvent interface from ~/types
+import type { HookEvent } from '~/types'
 
 const props = defineProps<{
   events: HookEvent[]

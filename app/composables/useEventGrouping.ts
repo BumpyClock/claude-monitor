@@ -63,13 +63,13 @@ export function useEventGrouping(
     if (event.summary) {
       // Handle "Read file.txt" format
       const readMatch = event.summary.match(/^read\s+(.+)$/i)
-      if (readMatch) {
+      if (readMatch?.[1]) {
         return readMatch[1].trim()
       }
       
       // Handle "Write to file.txt" format  
       const writeMatch = event.summary.match(/^write\s+(?:to\s+)?(.+)$/i)
-      if (writeMatch) {
+      if (writeMatch?.[1]) {
         return writeMatch[1].trim()
       }
       
@@ -207,6 +207,11 @@ export function useEventGrouping(
   const createGroupedEvent = (group: EventGroup): GroupedEvent => {
     const baseEvent = group.events[0]
     
+    // Guard against undefined baseEvent
+    if (!baseEvent) {
+      throw new Error('Cannot create grouped event from empty group')
+    }
+    
     const groupMeta: GroupMeta = {
       group: 'aggregate',
       count: group.count,
@@ -218,13 +223,20 @@ export function useEventGrouping(
       summary: generateGroupSummary(group)
     }
 
-    return {
+    const groupedEvent: GroupedEvent = {
       ...baseEvent,
+      // Ensure required fields are defined with fallbacks
+      source_app: baseEvent.source_app || 'unknown',
+      session_id: baseEvent.session_id || 'unknown',
+      hook_event_type: baseEvent.hook_event_type || 'unknown',
+      payload: baseEvent.payload || {},
       isGroup: true,
       groupMeta,
       // Update timestamp to reflect the group's end time for proper sorting
       timestamp: group.endTime
     }
+    
+    return groupedEvent
   }
 
   // Statistics for debugging and UI display

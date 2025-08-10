@@ -15,7 +15,7 @@
             <Badge variant="outline" class="font-mono text-[10px] px-1.5 py-0.5 rounded-sm shrink-0" title="Session">
               {{ sessionIdShort }}
             </Badge>
-            <Badge v-if="agentName" variant="soft" class="text-[11px] px-2 py-0.5 truncate max-w-[30%]" title="Agent">
+            <Badge v-if="agentName" variant="secondary" class="text-[11px] px-2 py-0.5 truncate max-w-[30%]" title="Agent">
               {{ agentName }}
             </Badge>
           </div>
@@ -24,7 +24,7 @@
         <div class="flex items-start gap-3">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <Badge variant="soft" class="gap-1 px-2 py-0.5 text-[11px] leading-4">
+              <Badge variant="secondary" class="gap-1 px-2 py-0.5 text-[11px] leading-4">
                 <component :is="eventIcon" class="h-3.5 w-3.5 text-primary" />
                 <span class="font-medium text-[var(--theme-text-primary)]">{{ event.hook_event_type }}</span>
               </Badge>

@@ -60,13 +60,15 @@ export interface CustomTheme {
 export interface ThemeState {
   currentTheme: ThemeName | string;
   customThemes: CustomTheme[];
-  isDark: boolean;
+  isCustomTheme: boolean;
+  isLoading: boolean;
+  error: string | null;
 }
 
 export interface ThemeManagerState {
   isOpen: boolean;
-  activeSection: 'predefined' | 'custom' | 'create';
-  createFormData: CreateThemeFormData;
+  activeTab: 'predefined' | 'custom' | 'create';
+  previewTheme: CustomTheme | null;
   editingTheme: CustomTheme | null;
 }
 
@@ -81,7 +83,8 @@ export interface CreateThemeFormData {
 
 export interface ThemeValidationResult {
   isValid: boolean;
-  errors: Record<string, string>;
+  errors: string[];
+  warnings: string[];
 }
 
 export interface ThemeImportExport {

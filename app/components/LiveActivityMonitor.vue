@@ -55,14 +55,10 @@
         </div>
         
         <!-- Activity Stats -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center">
+        <div class="grid grid-cols-2 gap-2 text-center">
           <div class="bg-muted/30 rounded-lg p-2">
             <div class="text-lg font-bold text-blue-600">{{ currentEventRate }}</div>
             <div class="text-[10px] text-muted-foreground">Events/min</div>
-          </div>
-          <div class="bg-muted/30 rounded-lg p-2">
-            <div class="text-lg font-bold" :class="tokenRateColorClass">{{ formatNumber(currentTokenRate) }}</div>
-            <div class="text-[10px] text-muted-foreground">Tokens/min</div>
           </div>
           <div class="bg-muted/30 rounded-lg p-2">
             <div class="text-lg font-bold text-purple-600">{{ activeSessionsCount || 0 }}</div>
@@ -90,7 +86,7 @@ const props = defineProps<{
     eventType: string
   }
   timelineScroll?: number
-  wsConnection?: { value: WebSocket | null }
+  wsConnection?: WebSocket | null
   activeSessionsCount?: number
 }>()
 
@@ -287,12 +283,8 @@ const drawCombinedChart = () => {
   ctx.fillText('Tokens', padding + 5, padding + chartHeight * 0.65)
 }
 
-const formatNumber = (num: number): string => {
-  if (num === 0) return '0'
-  if (num < 1000) return num.toString()
-  if (num < 1000000) return `${(num / 1000).toFixed(1)}k`
-  return `${(num / 1000000).toFixed(1)}m`
-}
+// Use centralized formatters
+import { formatNumber } from '~/utils/formatters';
 
 const setTimeRange = (range: TimeRange) => {
   timeRange.value = range
@@ -353,8 +345,8 @@ onMounted(() => {
   updateInterval = window.setInterval(updateActivityData, 2000) // Update every 2 seconds
   
   // Listen for WebSocket updates
-  if (props.wsConnection?.value) {
-    props.wsConnection.value.addEventListener('message', handleWebSocketMessage)
+  if (props.wsConnection) {
+    props.wsConnection.addEventListener('message', handleWebSocketMessage)
   }
   
   // Set up resize observer
@@ -369,8 +361,8 @@ onUnmounted(() => {
     clearInterval(updateInterval)
   }
   
-  if (props.wsConnection?.value) {
-    props.wsConnection.value.removeEventListener('message', handleWebSocketMessage)
+  if (props.wsConnection) {
+    props.wsConnection.removeEventListener('message', handleWebSocketMessage)
   }
   
   if (resizeObserver) {

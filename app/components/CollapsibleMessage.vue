@@ -28,7 +28,7 @@
                 <Button
                   @click.stop="toggleContentExpansion"
                   variant="ghost"
-                  size="xs"
+                  size="sm"
                   class="mt-1 text-xs"
                 >
                   Show more
@@ -54,7 +54,7 @@
                   v-if="content.length > 2 && !isExpanded"
                   @click.stop="toggleContentExpansion"
                   variant="ghost"
-                  size="xs"
+                  size="sm"
                   class="text-xs"
                 >
                   Show {{ content.length - 2 }} more items
@@ -80,7 +80,7 @@
           v-if="needsTruncation"
           @click.stop="toggleContentExpansion"
           variant="ghost"
-          size="xs"
+          size="sm"
           class="flex items-center gap-1"
         >
           <component :is="isExpanded ? ChevronUp : ChevronDown" class="h-3 w-3" />
@@ -91,7 +91,7 @@
         <Button
           @click.stop="toggleDetailsExpansion"
           variant="ghost"
-          size="xs"
+          size="sm"
           class="flex items-center gap-1"
         >
           <component :is="showDetails ? ChevronUp : ChevronDown" class="h-3 w-3" />
@@ -102,7 +102,7 @@
         <Button
           @click.stop="handleCopy"
           variant="ghost"
-          size="xs"
+          size="sm"
           :title="'Copy message'"
         >
           <component :is="copyIcon" class="h-3.5 w-3.5" :class="copyIconClass" />

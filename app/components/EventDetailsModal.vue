@@ -100,15 +100,8 @@ import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 import { Card } from '~/components/ui/card'
 
-// Simple interface for hook events - adjust as needed for your types
-interface HookEvent {
-  hook_event_type: string
-  timestamp: number | string
-  source_app: string
-  session_id: string
-  payload: any
-  summary?: string
-}
+// Use the standard HookEvent interface from ~/types
+import type { HookEvent } from '~/types'
 
 const props = defineProps<{ 
   isOpen: boolean

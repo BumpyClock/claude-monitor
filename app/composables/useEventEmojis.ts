@@ -24,7 +24,7 @@ export function useEventEmojis() {
   };
   
   const getLabelForEventType = (eventType: string): string => {
-    return eventTypeToLabel[eventType] || eventTypeToLabel.default;
+    return eventTypeToLabel[eventType] ?? eventTypeToLabel.default ?? 'Event';
   };
   
   return {

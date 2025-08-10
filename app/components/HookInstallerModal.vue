@@ -280,7 +280,7 @@ const selectDirectory = async () => {
         if (files && files.length > 0) {
           // Extract full directory path from the first file
           const firstFile = files[0]
-          const fullPath = firstFile.webkitRelativePath
+          const fullPath = firstFile?.webkitRelativePath
           
           if (fullPath) {
             // Get the directory path by removing the filename

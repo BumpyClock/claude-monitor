@@ -59,15 +59,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
-
-// Simple interface for hook events - adjust as needed for your types
-interface HookEvent {
-  timestamp: number
-  source_app: string
-  hook_event_type: string
-}
-
-type TimeRange = '15s' | '30s' | '1m' | '3m' | '5m'
+import type { HookEvent, TimeRange } from '~/types'
 
 const props = defineProps<{
   events: HookEvent[]
@@ -101,7 +93,7 @@ const projectColors = computed<Record<string, string>>(() => {
   for (const e of props.events) {
     const app = e.source_app || 'Unknown'
     if (!map[app]) {
-      map[app] = colors[colorIndex % colors.length]
+      map[app] = colors[colorIndex % colors.length] || '#8b5cf6'
       colorIndex++
     }
   }
@@ -127,9 +119,10 @@ const chartData = computed(() => {
   }[timeRange.value]
 
   const startTime = now - timeRangeMs
-  const recentEvents = filteredEvents.value.filter(event => 
-    event.timestamp >= startTime
-  )
+  const recentEvents = filteredEvents.value.filter(event => {
+    const timestamp = event.timestamp
+    return timestamp !== undefined && timestamp >= startTime
+  })
 
   // Reduce data points on mobile for better performance
   const dataPoints = typeof window !== 'undefined' && window.innerWidth < 640 ? 15 : 20
@@ -143,6 +136,7 @@ const chartData = computed(() => {
 
   recentEvents.forEach(event => {
     const eventTime = event.timestamp
+    if (eventTime === undefined) return
     const intervalIndex = Math.floor((eventTime - startTime) / intervalMs)
     const intervalStart = startTime + (intervalIndex * intervalMs)
     const app = event.source_app || 'Unknown'
@@ -155,7 +149,7 @@ const chartData = computed(() => {
     time: parseInt(time),
     timeLabel: new Date(parseInt(time)).toLocaleTimeString('en-US', { minute: '2-digit', second: '2-digit' }),
     ...seriesCategories.value.reduce((acc, app) => { 
-      acc[app] = counts[app] || 0
+      (acc as any)[app] = counts[app] || 0
       return acc 
     }, {} as Record<string, number>)
   }))
@@ -170,12 +164,15 @@ const setTimeRange = (range: TimeRange) => {
 
 const handleTimeRangeKeyDown = (event: KeyboardEvent, index: number) => {
   if (event.key === 'ArrowLeft' && index > 0) {
-    timeRange.value = timeRanges[index - 1]
+    const newRange = timeRanges[index - 1]
+    if (newRange) timeRange.value = newRange
   } else if (event.key === 'ArrowRight' && index < timeRanges.length - 1) {
-    timeRange.value = timeRanges[index + 1]
+    const newRange = timeRanges[index + 1]
+    if (newRange) timeRange.value = newRange
   } else if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault()
-    setTimeRange(timeRanges[index])
+    const range = timeRanges[index]
+    if (range) setTimeRange(range)
   }
 }
 
@@ -197,7 +194,7 @@ const drawChart = () => {
   // Find max value for scaling
   const maxValue = Math.max(
     ...chartData.value.flatMap(d => 
-      seriesCategories.value.map(app => d[app] || 0)
+      seriesCategories.value.map(app => (d as any)[app] || 0)
     ),
     1
   )
@@ -212,8 +209,8 @@ const drawChart = () => {
 
     ctx.beginPath()
     chartData.value.forEach((point, index) => {
-      const x = padding + (index / (chartData.value.length - 1)) * (width - 2 * padding)
-      const y = height - padding - ((point[app] || 0) / maxValue) * (height - 2 * padding)
+      const x = padding + (chartData.value.length > 1 ? (index / (chartData.value.length - 1)) : 0.5) * (width - 2 * padding)
+      const y = height - padding - (((point as any)[app] || 0) / maxValue) * (height - 2 * padding)
       
       if (index === 0) {
         ctx.moveTo(x, y)
@@ -226,8 +223,8 @@ const drawChart = () => {
     // Draw points
     ctx.fillStyle = color
     chartData.value.forEach((point, index) => {
-      const x = padding + (index / (chartData.value.length - 1)) * (width - 2 * padding)
-      const y = height - padding - ((point[app] || 0) / maxValue) * (height - 2 * padding)
+      const x = padding + (chartData.value.length > 1 ? (index / (chartData.value.length - 1)) : 0.5) * (width - 2 * padding)
+      const y = height - padding - (((point as any)[app] || 0) / maxValue) * (height - 2 * padding)
       
       ctx.beginPath()
       ctx.arc(x, y, 2, 0, 2 * Math.PI)
