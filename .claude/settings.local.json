@@ -18,7 +18,10 @@
       "Bash(npm run:*)",
       "Bash(pnpm exec:*)",
       "mcp__node-code-sandbox-mcp__get_dependency_types",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

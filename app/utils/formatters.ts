@@ -120,3 +120,30 @@ export function getBurnRateColorClass(rate: number): string {
   if (rate < 2000) return 'text-orange-600';
   return 'text-red-600';
 }
+
+// ==========================================
+// TOKEN USAGE SPECIFIC FORMATTERS
+// ==========================================
+
+/**
+ * Formats large numbers with K/M suffixes for token counts and burn rates
+ * Optimized for token display across components
+ */
+export function formatLargeNumber(num: number): string {
+  if (num === 0) return '0'
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
+  return Math.round(num).toString()
+}
+
+/**
+ * Formats model names consistently across components
+ * Extracts main model name from full version string
+ */
+export function formatModelName(model: string): string {
+  const parts = model.split('-')
+  if (parts.length > 3) {
+    return parts.slice(0, 3).join('-')
+  }
+  return model
+}
