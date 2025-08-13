@@ -26,3 +26,4 @@ logs
 **/*/__pycache__/
 
 .next/
+.claude/settings.local.json

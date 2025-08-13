@@ -24,7 +24,9 @@
       "Bash(npm run build:*)",
       "Bash(grep:*)",
       "Bash(unlink:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git fetch:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
