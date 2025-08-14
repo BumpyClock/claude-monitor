@@ -8,10 +8,24 @@ Constants for Claude Code Hooks.
 """
 
 import os
-import fcntl
 import time
 import random
 from pathlib import Path
+
+# Cross-platform file locking
+try:
+    import fcntl
+    HAS_FCNTL = True
+except ImportError:
+    # Windows doesn't have fcntl, but we can use msvcrt for file locking
+    try:
+        import msvcrt
+        HAS_MSVCRT = True
+        HAS_FCNTL = False
+    except ImportError:
+        # Fallback to no locking (graceful degradation)
+        HAS_FCNTL = False
+        HAS_MSVCRT = False
 
 # Base directory for all logs
 # Default is 'logs' in the current working directory
@@ -28,6 +42,17 @@ def get_session_log_dir(session_id: str) -> Path:
         Path object for the session's log directory
     """
     return Path(LOG_BASE_DIR) / session_id
+
+def _acquire_lock(file_handle):
+    """Cross-platform file locking helper."""
+    if HAS_FCNTL:
+        fcntl.flock(file_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    elif HAS_MSVCRT:
+        # Windows file locking using msvcrt
+        msvcrt.locking(file_handle.fileno(), msvcrt.LK_NBLCK, 1)
+    else:
+        # No locking available - rely on retry logic
+        pass
 
 def ensure_session_log_dir(session_id: str) -> Path:
     """
@@ -52,7 +77,7 @@ def ensure_session_log_dir(session_id: str) -> Path:
         try:
             # Try to acquire exclusive lock for directory creation
             with open(lock_file, 'w') as f:
-                fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                _acquire_lock(f)
                 
                 # Double-check if directory was created by another process
                 if not log_dir.exists():
